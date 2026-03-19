@@ -42,11 +42,11 @@ client.once('ready', () => {
 });
 
 client.on('messageCreate', message => {
-  if (message.content === '.ping') {
+  if (message.content === '!ping') {
     message.reply('Pong!');
   }
 
-  if (message.content === '.join') {
+  if (message.content === '!join') {
     const { channel } = message.member.voice;
     if (!channel) return message.reply('Önce bir ses kanalına gir!');
 
