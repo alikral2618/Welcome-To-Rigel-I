@@ -64,7 +64,7 @@ client.on('messageCreate', async message => {
   }
 
   // 🔥 TEMİZLE KOMUTU (DOĞRU YERDE)
-  if (message.content.startsWith('+temizle')) {
+  if (message.content.startsWith('!temizle')) {
     const args = message.content.split(' ');
     const miktar = parseInt(args[1]);
 
