@@ -1,7 +1,6 @@
 require("dotenv").config()
 
-// Welcome to Rigel II
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, ActivityType } = require('discord.js'); // 🔥 EKLENDİ
 const { joinVoiceChannel } = require('@discordjs/voice');
 
 const client = new Client({
@@ -9,22 +8,45 @@ const client = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildVoiceStates // ses kanalları için
+    GatewayIntentBits.GuildVoiceStates
   ]
 });
 
-// Bot hazır olduğunda
 client.once('ready', () => {
-  console.log('Bot aktif!');
+  console.log(`${client.user.tag} aktif!`);
+
+  const setStatus = () => {
+    const statuses = [
+      '👀 Sunucuyu izliyor',
+      '⚙️ Komutları izliyor',
+      `🌐 ${client.guilds.cache.size} sunucuya bakıyor`,
+      '🎥 YouTube: @NextAli',
+      '🚀 Aktif!'
+    ];
+
+    const random = statuses[Math.floor(Math.random() * statuses.length)];
+
+    client.user.setPresence({
+      status: 'dnd',
+      activities: [{
+        name: random,
+        type: ActivityType.Watching
+      }]
+    });
+
+    console.log("Status:", random);
+  };
+
+  setStatus();
+  setInterval(setStatus, 10000);
 });
 
-// Metin komutları
 client.on('messageCreate', message => {
-  if (message.content === '!ping') {
+  if (message.content === '.ping') {
     message.reply('Pong!');
   }
 
-  if (message.content === '!join') {
+  if (message.content === '.join') {
     const { channel } = message.member.voice;
     if (!channel) return message.reply('Önce bir ses kanalına gir!');
 
