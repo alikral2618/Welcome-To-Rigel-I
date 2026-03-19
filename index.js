@@ -1,6 +1,6 @@
 require("dotenv").config()
 
-const { Client, GatewayIntentBits, ActivityType } = require('discord.js');
+const { Client, GatewayIntentBits, ActivityType, PermissionsBitField } = require('discord.js');
 const { joinVoiceChannel } = require('@discordjs/voice');
 
 const client = new Client({
@@ -17,7 +17,7 @@ client.once('ready', () => {
 
   const setStatus = () => {
     const statuses = [
-    '👀 Sunucuyu izliyor',
+      '👀 Sunucuyu izliyor',
       '⚙️ Komutları izliyor',
       `🌐 ${client.guilds.cache.size} sunucuya bakıyor`,
       '🎥 YouTube: @NextAli',
@@ -41,9 +41,12 @@ client.once('ready', () => {
   setInterval(setStatus, 10000);
 });
 
-client.on('messageCreate', message => {
+// 🔥 BURASI DÜZGÜN EVENT
+client.on('messageCreate', async message => {
+  if (message.author.bot) return;
+
   if (message.content === '!ping') {
-    message.reply('Pong!');
+    return message.reply('Pong!');
   }
 
   if (message.content === '!join') {
@@ -57,7 +60,37 @@ client.on('messageCreate', message => {
       selfDeaf: false
     });
 
-    message.reply(`Ses kanalına katıldım: ${channel.name}`);
+    return message.reply(`Ses kanalına katıldım: ${channel.name}`);
+  }
+
+  // 🔥 TEMİZLE KOMUTU (DOĞRU YERDE)
+  if (message.content.startsWith('+temizle')) {
+    const args = message.content.split(' ');
+    const miktar = parseInt(args[1]);
+
+    if (!miktar || miktar < 1 || miktar > 100) {
+      return message.reply('Lütfen 1 ile 100 arasında bir sayı gir!');
+    }
+
+    if (!message.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+      return message.reply('Mesajları silmek için yetkin yok!');
+    }
+
+    if (!message.guild.members.me.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+      return message.reply('Botun mesajları silme yetkisi yok!');
+    }
+
+    try {
+      const deleted = await message.channel.bulkDelete(miktar, true);
+
+      message.channel.send(`${deleted.size} mesaj başarıyla silindi!`).then(msg => {
+        setTimeout(() => msg.delete(), 5000);
+      });
+
+    } catch (err) {
+      console.error(err);
+      message.reply('Mesajlar silinemedi. 14 günden eski mesajlar silinemez.');
+    }
   }
 });
 
